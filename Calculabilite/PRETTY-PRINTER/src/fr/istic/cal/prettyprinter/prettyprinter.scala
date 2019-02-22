@@ -162,7 +162,7 @@ object Prettyprinter {
   }
 
   /**
-   * ajout d'une chaîne après le dernier élément d'une liste de chaînes
+   * Ajout d'une chaîne après le dernier élément d'une liste de chaînes
    *
    * @param suff une chaîne
    * @param strings une liste non vide de chaînes
@@ -188,7 +188,6 @@ object Prettyprinter {
    * @param is : une liste de spécifications d'indentation
    * @return une liste de chaînes représentant la syntaxe concrète de la commande
    */
-  // TODO TP2
   def prettyPrintCommand(command: Command, is: IndentSpec): List[String] = {
     var res: List[String] = Nil
     command match {
@@ -218,15 +217,14 @@ object Prettyprinter {
    * @param is : une liste de spécifications d'indentation
    * @return une liste de chaînes représentant la syntaxe concrète de la listes de commandes
    */
-  // /!\ TODO pb il faut ajouter ; après "od" s'il reste des instructions => Comment trouver qu'on a des instructions imbriquées ?
   def prettyPrintCommands(commands: List[Command], is: IndentSpec): List[String] = {
     var res: List[String] = List()
     commands match {
-      case Nil             => Nil
-      // S'il n'y a qu'un élément sans suite, pas de ;
-      case x :: Nil        => res = res ++ prettyPrintCommand(x, is)
-      case x :: y :: Nil   => res = res ++ appendStringAfterAll(" ;", prettyPrintCommand(x, is)) ++ prettyPrintCommand(y, is)
-      case x :: y :: reste => res = res ++ appendStringAfterAll(" ;", prettyPrintCommand(x, is)) ++ prettyPrintCommand(y, is) ++ prettyPrintCommands(reste, is)
+      case Nil        => Nil
+      // S'il n'y a qu'un élément sans suite, pas de ";"
+      case x :: Nil   => res = res ++ prettyPrintCommand(x, is) ++ Nil
+      // Il reste des instructions après x. On ajoute un ";" après le dernier élément
+      case x :: reste => res = res ++ appendStringAfterLast(" ;", prettyPrintCommand(x, is)) ++ prettyPrintCommands(reste, is)
     }
     res
   }
