@@ -166,8 +166,8 @@ object Prettyprinter {
      */
     def appendStringAfterLast(suff: String, strings: List[String]): List[String] = {
         strings match {
-            case Nil => Nil
-            case x :: Nil => (x + suff) :: Nil
+            case Nil        => Nil
+            case x :: Nil   => (x + suff) :: Nil
             case x :: reste => x :: appendStringAfterLast(suff, reste)
         }
     }
