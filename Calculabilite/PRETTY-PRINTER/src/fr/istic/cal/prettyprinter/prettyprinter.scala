@@ -3,7 +3,7 @@ package fr.istic.cal.prettyprinter
 import scala.util.Try
 
 /**
- * définition d'une exception pour le cas des listes vides de commandes
+ * Définition d'une exception pour le cas des listes vides de commandes
  */
 case object ExceptionListeVide extends Exception
 
