@@ -74,8 +74,8 @@ object Interpreter {
      * modifiée pour prendre en compte la nouvelle valeur de v sinon
      */
     def assign(v: Variable, e: Value, mem: Memory): Memory = {
-        // v est dans la mémoire
         val listeFiltree = mem.filter((tuple) => tuple._1 == v)
+        // v est dans la mémoire
         if (listeFiltree.length > 0) {
             mem.map((tuple) => if (tuple._1 == v) (tuple._1, e) else tuple)
         } else {
