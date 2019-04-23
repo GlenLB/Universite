@@ -59,27 +59,56 @@ object While1cons {
                 val x = NewVar.make(); (List(Set(x, Nl)), x)
             case Cst(name) =>
                 val x = NewVar.make(); (List(Set(x, Cst(name))), x)
-            case VarExp(name)     => (List(), Var(name))
+            case VarExp(name) => (List(), Var(name))
             case Cons(arg1, arg2) => {
+                val retourArg1 = while1ConsExprV(arg1)
+                val retourArg2 = while1ConsExprV(arg2)
+                val var1 = retourArg1._2
+                val var2 = retourArg2._2
+                var nameVar1 = ""
+                var nameVar2 = ""
+                var1 match {
+                    case Var(name) => nameVar1 = name
+                }
+                var2 match {
+                    case Var(name) => nameVar2 = name
+                }
+                var l: List[Command] = retourArg1._1 ++ retourArg2._1
                 val x = NewVar.make()
-                val y = NewVar.make()
-                val z = NewVar.make()
-                var nameX = ""
-                var nameY = ""
-                x match {
-                    case Var(name) => nameX = name
-                }
-                y match {
-                    case Var(name) => nameY = name
-                }
-                val l: List[Command] = List(Set(x, arg1), Set(y, arg2), Set(z, Cons(VarExp(nameX), VarExp(nameY))))
-                (l, z)
+                l = l :+ Set(x, Cons(VarExp(nameVar1), VarExp(nameVar2)))
+                (l, x)
             }
             case Hd(arg) =>
-                val x = NewVar.make(); (List(Set(x, Hd(arg))), x)
+                val retourArg = while1ConsExprV(arg)
+                val varArg = retourArg._2
+                var nameVar = ""
+                varArg match {
+                    case Var(name) => nameVar = name
+                }
+                val x = NewVar.make(); (retourArg._1 ++ List(Set(x, Hd(VarExp(nameVar)))), x)
             case Tl(arg) =>
-                val x = NewVar.make(); (List(Set(x, Tl(arg))), x)
-            case Eq(arg1, arg2) => val x = NewVar.make(); (List(Set(x, Eq(arg1, arg2))), x)
+                val retourArg = while1ConsExprV(arg)
+                val varArg = retourArg._2
+                var nameVar = ""
+                varArg match {
+                    case Var(name) => nameVar = name
+                }
+                val x = NewVar.make(); (retourArg._1 ++ List(Set(x, Tl(VarExp(nameVar)))), x)
+            case Eq(arg1, arg2) => {
+                val retourArg1 = while1ConsExprV(arg1)
+                val retourArg2 = while1ConsExprV(arg2)
+                val var1 = retourArg1._2
+                val var2 = retourArg2._2
+                var nameVar1 = ""
+                var nameVar2 = ""
+                var1 match {
+                    case Var(name) => nameVar1 = name
+                }
+                var2 match {
+                    case Var(name) => nameVar2 = name
+                }
+                val x = NewVar.make(); (retourArg1._1 ++ retourArg2._1 ++ List(Set(x, Eq(VarExp(nameVar1), VarExp(nameVar2)))), x)
+            }
         }
     }
 
@@ -89,8 +118,61 @@ object While1cons {
      * que l'expression et une expression qui contient le résultat
      */
     // TODO TP4
-    def while1ConsExprSE(expression: Expression): (List[Command], Expression) = { 
-        ???
+    def while1ConsExprSE(expression: Expression): (List[Command], Expression) = {
+        expression match {
+            case Nl           => (List(), Nl)
+            case Cst(name)    => (List(), Cst(name))
+            case VarExp(name) => (List(), VarExp(name))
+            case Hd(arg) => {
+                val retourArg = while1ConsExprV(arg)
+                val varArg = retourArg._2
+                var nameVar = ""
+                varArg match {
+                    case Var(name) => nameVar = name
+                }
+                (retourArg._1, Hd(VarExp(nameVar)))
+            }
+            case Tl(arg) => {
+                val retourArg = while1ConsExprV(arg)
+                val varArg = retourArg._2
+                var nameVar = ""
+                varArg match {
+                    case Var(name) => nameVar = name
+                }
+                (retourArg._1, Tl(VarExp(nameVar)))
+            }
+            case Cons(arg1, arg2) => {
+                val retourArg1 = while1ConsExprV(arg1)
+                val retourArg2 = while1ConsExprV(arg2)
+                val var1 = retourArg1._2
+                val var2 = retourArg2._2
+                var nameVar1 = ""
+                var nameVar2 = ""
+                var1 match {
+                    case Var(name) => nameVar1 = name
+                }
+                var2 match {
+                    case Var(name) => nameVar2 = name
+                }
+                var l: List[Command] = retourArg1._1 ++ retourArg2._1
+                (l, Cons(VarExp(nameVar1), VarExp(nameVar2)))
+            }
+            case Eq(arg1, arg2) => {
+                val retourArg1 = while1ConsExprV(arg1)
+                val retourArg2 = while1ConsExprV(arg2)
+                val var1 = retourArg1._2
+                val var2 = retourArg2._2
+                var nameVar1 = ""
+                var nameVar2 = ""
+                var1 match {
+                    case Var(name) => nameVar1 = name
+                }
+                var2 match {
+                    case Var(name) => nameVar2 = name
+                }
+                (retourArg1._1 ++ retourArg2._1, Eq(VarExp(nameVar1), VarExp(nameVar2)))
+            }
+        }
     }
 
     /**
@@ -99,11 +181,19 @@ object While1cons {
      */
     /**
      * @param command : un AST décrivant une commande du langage WHILE
-     * @return une liste de commandes ayant un seul construteur par expression
+     * @return une liste de commandes ayant un seul constructeur par expression
      * et ayant le même effet que la commande
      */
     // TODO TP4
-    def while1ConsCommand(command: Command): List[Command] = { ??? }
+    def while1ConsCommand(command: Command): List[Command] = { 
+        command match {
+            case Nop => List(Nop)
+            case Set(variable, expression) => {
+                val res = while1ConsExprSE(expression)
+                List(Set(variable, res._2))
+            }
+        }
+    }
 
     /**
      * @param commands : une liste d'AST décrivant une liste de commandes du langage WHILE
