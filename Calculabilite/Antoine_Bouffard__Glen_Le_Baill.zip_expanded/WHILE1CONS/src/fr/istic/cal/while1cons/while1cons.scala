@@ -49,6 +49,15 @@ object While1cons {
      */
 
     /**
+     * Méthode auxiliaire pour transformer une variable en expression
+     */
+    def varToVarExp(v: Variable): Expression = {
+        v match {
+            case Var(name) => return VarExp(name)
+        }
+    }
+
+    /**
      * @param expression : un AST décrivant une expression du langage WHILE
      * @return une paire constituée d'une liste d'affectations ayant le même effet
      * que l'expression et la variable qui contient le résultat
@@ -65,49 +74,25 @@ object While1cons {
                 val retourArg2 = while1ConsExprV(arg2)
                 val var1 = retourArg1._2
                 val var2 = retourArg2._2
-                var nameVar1 = ""
-                var nameVar2 = ""
-                var1 match {
-                    case Var(name) => nameVar1 = name
-                }
-                var2 match {
-                    case Var(name) => nameVar2 = name
-                }
                 var l: List[Command] = retourArg1._1 ++ retourArg2._1
                 val x = NewVar.make()
-                l = l :+ Set(x, Cons(VarExp(nameVar1), VarExp(nameVar2)))
+                l = l :+ Set(x, Cons(varToVarExp(var1), varToVarExp(var2)))
                 (l, x)
             }
             case Hd(arg) =>
                 val retourArg = while1ConsExprV(arg)
                 val varArg = retourArg._2
-                var nameVar = ""
-                varArg match {
-                    case Var(name) => nameVar = name
-                }
-                val x = NewVar.make(); (retourArg._1 ++ List(Set(x, Hd(VarExp(nameVar)))), x)
+                val x = NewVar.make(); (retourArg._1 ++ List(Set(x, Hd(varToVarExp(varArg)))), x)
             case Tl(arg) =>
                 val retourArg = while1ConsExprV(arg)
                 val varArg = retourArg._2
-                var nameVar = ""
-                varArg match {
-                    case Var(name) => nameVar = name
-                }
-                val x = NewVar.make(); (retourArg._1 ++ List(Set(x, Tl(VarExp(nameVar)))), x)
+                val x = NewVar.make(); (retourArg._1 ++ List(Set(x, Tl(varToVarExp(varArg)))), x)
             case Eq(arg1, arg2) => {
                 val retourArg1 = while1ConsExprV(arg1)
                 val retourArg2 = while1ConsExprV(arg2)
                 val var1 = retourArg1._2
                 val var2 = retourArg2._2
-                var nameVar1 = ""
-                var nameVar2 = ""
-                var1 match {
-                    case Var(name) => nameVar1 = name
-                }
-                var2 match {
-                    case Var(name) => nameVar2 = name
-                }
-                val x = NewVar.make(); (retourArg1._1 ++ retourArg2._1 ++ List(Set(x, Eq(VarExp(nameVar1), VarExp(nameVar2)))), x)
+                val x = NewVar.make(); (retourArg1._1 ++ retourArg2._1 ++ List(Set(x, Eq(varToVarExp(var1), varToVarExp(var2)))), x)
             }
         }
     }
@@ -117,7 +102,6 @@ object While1cons {
      * @return une paire constituée d'une liste d'affectations ayant le même effet
      * que l'expression et une expression qui contient le résultat
      */
-    // TODO TP4
     def while1ConsExprSE(expression: Expression): (List[Command], Expression) = {
         expression match {
             case Nl           => (List(), Nl)
@@ -126,51 +110,27 @@ object While1cons {
             case Hd(arg) => {
                 val retourArg = while1ConsExprV(arg)
                 val varArg = retourArg._2
-                var nameVar = ""
-                varArg match {
-                    case Var(name) => nameVar = name
-                }
-                (retourArg._1, Hd(VarExp(nameVar)))
+                (retourArg._1, Hd(varToVarExp(varArg)))
             }
             case Tl(arg) => {
                 val retourArg = while1ConsExprV(arg)
                 val varArg = retourArg._2
-                var nameVar = ""
-                varArg match {
-                    case Var(name) => nameVar = name
-                }
-                (retourArg._1, Tl(VarExp(nameVar)))
+                (retourArg._1, Tl(varToVarExp(varArg)))
             }
             case Cons(arg1, arg2) => {
                 val retourArg1 = while1ConsExprV(arg1)
                 val retourArg2 = while1ConsExprV(arg2)
                 val var1 = retourArg1._2
                 val var2 = retourArg2._2
-                var nameVar1 = ""
-                var nameVar2 = ""
-                var1 match {
-                    case Var(name) => nameVar1 = name
-                }
-                var2 match {
-                    case Var(name) => nameVar2 = name
-                }
                 var l: List[Command] = retourArg1._1 ++ retourArg2._1
-                (l, Cons(VarExp(nameVar1), VarExp(nameVar2)))
+                (l, Cons(varToVarExp(var1), varToVarExp(var2)))
             }
             case Eq(arg1, arg2) => {
                 val retourArg1 = while1ConsExprV(arg1)
                 val retourArg2 = while1ConsExprV(arg2)
                 val var1 = retourArg1._2
                 val var2 = retourArg2._2
-                var nameVar1 = ""
-                var nameVar2 = ""
-                var1 match {
-                    case Var(name) => nameVar1 = name
-                }
-                var2 match {
-                    case Var(name) => nameVar2 = name
-                }
-                (retourArg1._1 ++ retourArg2._1, Eq(VarExp(nameVar1), VarExp(nameVar2)))
+                (retourArg1._1 ++ retourArg2._1, Eq(varToVarExp(var1), varToVarExp(var2)))
             }
         }
     }
@@ -184,13 +144,29 @@ object While1cons {
      * @return une liste de commandes ayant un seul constructeur par expression
      * et ayant le même effet que la commande
      */
-    // TODO TP4
-    def while1ConsCommand(command: Command): List[Command] = { 
+    def while1ConsCommand(command: Command): List[Command] = {
         command match {
             case Nop => List(Nop)
             case Set(variable, expression) => {
                 val res = while1ConsExprSE(expression)
-                List(Set(variable, res._2))
+                res._1 ++ List(Set(variable, res._2))
+            }
+            case While(condition, body) => {
+                val v = while1ConsExprV(condition)
+                var b = while1ConsCommands(body)
+                b = b ++ v._1
+                v._1 ++ List(While(varToVarExp(v._2), b))
+            }
+            case For(count, body) => {
+                val v = while1ConsExprV(count)
+                var b = while1ConsCommands(body)
+                v._1 ++ List(For(varToVarExp(v._2), b))
+            }
+            case If(condition, then_commands, else_commands) => {
+                val v = while1ConsExprV(condition)
+                var thenC: List[Command] = while1ConsCommands(then_commands)
+                var elseC: List[Command] = while1ConsCommands(else_commands)
+                v._1 ++ List(If(varToVarExp(v._2), thenC, elseC))
             }
         }
     }
@@ -200,8 +176,11 @@ object While1cons {
      * @return une liste de commandes ayant un seul construteur par expression
      * et ayant le même effet que la commande
      */
-    // TODO TP4
-    def while1ConsCommands(commands: List[Command]): List[Command] = { ??? }
+    def while1ConsCommands(commands: List[Command]): List[Command] = {
+        var res: List[Command] = Nil
+        commands.foreach(c => res = res ++ while1ConsCommand(c))
+        res
+    }
 
     /**
      *
@@ -213,8 +192,13 @@ object While1cons {
      * @param is : une liste de spécifications d'indentation
      * @return une liste de chaînes représentant la syntaxe concrète du programme
      */
-    // TODO TP4
-    def while1ConsProgr(program: Program): Program = { ??? }
+    def while1ConsProgr(program: Program): Program = {
+        program match {
+            case Progr(in, body, out) => {
+                Progr(in, while1ConsCommands(body), out)
+            }
+        }
+    }
 
     def main(args: Array[String]): Unit = {
 
